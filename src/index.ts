@@ -7,9 +7,9 @@ import type {
     ComplaintUpdate, 
     PublicTricycleView, 
     StatusCounts 
-} from "../types/index";
+} from "./types/index";
 
-import { ComplaintStatus, Role } from "../types/index";
+import { ComplaintStatus, Role } from "./types/index";
 
 // ===== PRIMITIVE TYPE ANNOTATIONS =====
 const projectName: string = "Complaint Impact";

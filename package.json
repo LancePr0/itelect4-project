@@ -20,6 +20,8 @@
   "homepage": "https://github.com/LancePr0/itelect4-project#readme",
   "devDependencies": {
     "@types/node": "^26.1.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
