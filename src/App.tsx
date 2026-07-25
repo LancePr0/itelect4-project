@@ -1,14 +1,13 @@
 // src/App.tsx
-import React from "react";
 import UserCard from "./components/Usercard";
 import ComplaintCard from "./components/ComplaintCard";
 import StatusBadge from "./components/StatusBadge";
 
-// Split imports: types use 'import type', Enums are imported as runtime values!
+
 import { Role, ComplaintStatus } from "./types/index";
 import type { User, Complaint } from "./types/index";
 
-// 1. Setup Mock Data using your real project structures
+
 const mockUser: User = {
     id: 1,
     name: "Lance Fedelicio",
@@ -19,14 +18,14 @@ const mockUser: User = {
 
 const mockComplaint: Complaint = {
     id: 101,
-    tricycleId: 1, // Required property from your database model
+    tricycleId: 1,
     complainantName: "Juan Dela Cruz",
     issueDescription: "Tricycle operating overcharge fee near LTO Lipa.",
     status: ComplaintStatus.PENDING, 
     filedAt: new Date()
 };
 
-// 2. Render the components on your dashboard screen
+
 function App() {
     return (
         <div className="app" style={{ padding: "20px", fontFamily: "sans-serif" }}>

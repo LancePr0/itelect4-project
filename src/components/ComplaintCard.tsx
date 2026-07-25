@@ -8,7 +8,7 @@ interface ComplaintCardProps {
 }
 
 function ComplaintCard({ complaint, onSelect }: ComplaintCardProps) {
-    // Typed mouse event for clicking the action button
+    
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
         onSelect(complaint);
     };

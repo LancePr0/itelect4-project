@@ -63,25 +63,24 @@ const complaintResponse: ApiResponse<Complaint> = {
 };
 console.log(`Complaint Issue: ${complaintResponse.data.issueDescription}`);
 
-// ===== USING UTILITY TYPES =====
-// 1. Partial: Modifying complaint status
+
 const updatePayload: ComplaintUpdate = { status: ComplaintStatus.RESOLVED };
 
-// 2. Omit: Showing safe public tricycle data
+
 const publicView: PublicTricycleView = {
     id: 101,
     plateNumber: "LP-1234",
     operatorName: "Juan dela Cruz"
 };
 
-// 3. Record: Dashboard widget analytics
+
 const counts: StatusCounts = {
     [ComplaintStatus.PENDING]: 12,
     [ComplaintStatus.RESOLVED]: 45,
     [ComplaintStatus.REJECTED]: 3
 };
 
-// ===== ReturnType =====
+
 function generateSMSNotice(operatorName: string, plate: string) {
     return {
         recipient: operatorName,
@@ -93,3 +92,11 @@ function generateSMSNotice(operatorName: string, plate: string) {
 type SMSPayload = ReturnType<typeof generateSMSNotice>;
 const notification: SMSPayload = generateSMSNotice(tricycleRecord.operatorName, tricycleRecord.plateNumber);
 console.log("Generated Notice:", notification.message);
+
+console.log("Full Stack Mode:", isFullStack);
+console.log("Officer Details:", officer);
+console.log("Update Payload:", updatePayload);
+console.log("Public View Data:", publicView);
+console.log("Status Counts:", counts);
+const sampleId: StringOrNumber = "COMP-2026-001";
+console.log(sampleId);

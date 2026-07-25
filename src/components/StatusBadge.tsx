@@ -1,9 +1,9 @@
 // src/components/StatusBadge.tsx
 import React from "react";
-import { ComplaintStatus } from "../types/index"; // Import your enum
+import { ComplaintStatus } from "../types/index"; 
 
 interface StatusBadgeProps {
-    statusType: ComplaintStatus; // Use the official project enum here!
+    statusType: ComplaintStatus; 
     children?: React.ReactNode;
 }
 
