@@ -9,7 +9,7 @@ interface ComplaintCardProps {
 
 function ComplaintCard({ complaint, onSelect }: ComplaintCardProps) {
     
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    const handleClick = (_e: React.MouseEvent<HTMLButtonElement>): void => {
         onSelect(complaint);
     };
 
