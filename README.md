@@ -1,6 +1,6 @@
 # Tricycle Complaint Impact System
 
-Tricycle complaint tracker built with React, TypeScript, Vite, and Tailwind CSS v4. Features a responsive grid layout, class-based dark mode toggle, and styled loading/error states.
+A simple tricycle complaint tracker for our ITELECT4 graded task. Built with React, TypeScript, and Vite, styled with Tailwind CSS v4. Has a responsive card grid, a dark mode toggle, and loading/error states for the complaint list.
 
 ## Screenshots
 
