@@ -1,3 +1,15 @@
+# Tricycle Complaint Impact System
+
+Tricycle complaint tracker built with React, TypeScript, Vite, and Tailwind CSS v4. Features a responsive grid layout, class-based dark mode toggle, and styled loading/error states.
+
+## Screenshots
+
+| Default view | Dark mode | Mobile width |
+| --- | --- | --- |
+| ![Default view](docs/screenshots/01-default-view.png) | ![Dark mode](docs/screenshots/02-dark-mode.png) | ![Mobile width](docs/screenshots/03-mobile-width.png) |
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
