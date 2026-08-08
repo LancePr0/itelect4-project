@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import useToggle from "./hooks/useToggle";
 import usePrevious from "./hooks/usePrevious";
+import UserCard from "./components/Usercard";
+import ComplaintCard from "./components/ComplaintCard";
 
 // Type definitions
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -13,7 +15,7 @@ interface User {
   isActive: boolean;
 }
 
-interface Complaint {
+export interface Complaint {
   id: string;
   complaint_number: string;
   complainant_name: string;
@@ -175,55 +177,15 @@ export function App() {
         {/* Responsive Grid Layout */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* User / Officer Card */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              {officerUser.name}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              {officerUser.email}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Role: {officerUser.role}
-            </p>
-            <button
-              onClick={() => setSelectedUser(officerUser)}
-              className="mt-3 rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition"
-            >
-              Select Officer
-            </button>
-          </div>
+          <UserCard user={officerUser} onSelect={setSelectedUser} />
 
           {/* Dynamic Complaint Cards */}
           {filteredComplaints.map((item) => (
-            <div
+            <ComplaintCard
               key={item.id}
-              className={`rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 ${
-                showDetails ? "p-5" : "p-3"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <h3
-                  className={`font-bold text-gray-900 dark:text-white ${
-                    showDetails ? "text-lg" : "text-sm"
-                  }`}
-                >
-                  {item.complaint_number}
-                </h3>
-                <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                  {item.status}
-                </span>
-              </div>
-
-              {showDetails && (
-                <p className="mt-2 text-xs text-gray-600 dark:text-gray-300">
-                  Complainant: {item.complainant_name}
-                </p>
-              )}
-
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Violation: {item.violation_type} — Body #{item.tricycle_body_number}
-              </p>
-            </div>
+              complaint={item}
+              variant={showDetails ? "default" : "compact"}
+            />
           ))}
         </div>
       </div>
