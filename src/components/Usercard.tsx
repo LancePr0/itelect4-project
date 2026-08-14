@@ -1,6 +1,6 @@
 // src/components/UserCard.tsx
 import React from "react";
-import type { User } from "../App";
+import type { User } from "../data/mockData";
 
 interface UserCardProps {
     user: User;
