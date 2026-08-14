@@ -1,10 +1,10 @@
 // src/components/ComplaintCard.tsx
-import type { Complaint } from "../App";
+import type { Complaint } from "../data/mockData";
 import StatusBadge from "./StatusBadge";
 
 interface ComplaintCardProps {
     complaint: Complaint;
-    variant?: "default" | "compact"; // optional variant prop
+    variant?: "default" | "compact"; 
 }
 
 function ComplaintCard({ complaint, variant = "default" }: ComplaintCardProps) {
