@@ -23,8 +23,12 @@ export interface Tricycle {
     id: number;
     plateNumber: string;
     operatorName: string;
-    phoneNumber: string; 
+    phoneNumber: string;
 }
+
+// Session 7: json-server writes ids as strings. ApiTricycle is what the
+// API actually returns, derived from Tricycle so it stays in sync.
+export type ApiTricycle = Omit<Tricycle, "id"> & { id: string };
 
 export interface Complaint {
     id: number;

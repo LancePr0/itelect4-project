@@ -1,5 +1,5 @@
 // src/components/ComplaintCard.tsx
-import type { Complaint } from "../data/mockData";
+import type { Complaint } from "../api/client";
 import StatusBadge from "./StatusBadge";
 
 interface ComplaintCardProps {

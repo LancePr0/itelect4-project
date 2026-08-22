@@ -1,15 +1,13 @@
 // src/pages/DashboardPage.tsx
 import { useState } from "react";
 import type { User } from "../data/mockData";
-import { officerUser, MOCK_COMPLAINTS } from "../data/mockData";
+import { officerUser } from "../data/mockData";
 import UserCard from "../components/Usercard";
 import useToggle from "../hooks/useToggle";
 
 function DashboardPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDetails, toggleDetails] = useToggle(false);
-
-  const pendingCount = MOCK_COMPLAINTS.filter((c) => c.status === "Pending").length;
 
   return (
     <div>
@@ -20,10 +18,6 @@ function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <UserCard user={officerUser} onSelect={setSelectedUser} />
       </div>
-
-      <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-        {MOCK_COMPLAINTS.length} total complaints, {pendingCount} pending.
-      </p>
 
       <button
         onClick={toggleDetails}

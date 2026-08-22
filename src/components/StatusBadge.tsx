@@ -1,6 +1,6 @@
 // src/components/StatusBadge.tsx
 import React from "react";
-import type { Complaint } from "../data/mockData";
+import type { Complaint } from "../api/client";
 
 type ComplaintStatus = Complaint["status"];
 
