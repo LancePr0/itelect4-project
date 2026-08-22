@@ -1,0 +1,51 @@
+{
+  "complaints": [
+    {
+      "id": "1",
+      "complaint_number": "CMP-2026-001",
+      "complainant_name": "Maria Santos",
+      "tricycle_body_number": "123",
+      "violation_type": "Overcharging",
+      "status": "Pending",
+      "created_at": "2026-08-01T09:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "complaint_number": "CMP-2026-002",
+      "complainant_name": "Pedro Penduko",
+      "tricycle_body_number": "456",
+      "violation_type": "Refusal to Convey Passenger",
+      "status": "Under Review",
+      "created_at": "2026-08-05T09:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "complaint_number": "CMP-2026-003",
+      "complainant_name": "Ana Reyes",
+      "tricycle_body_number": "789",
+      "violation_type": "Reckless Driving",
+      "status": "Resolved",
+      "created_at": "2026-07-20T09:00:00.000Z"
+    }
+  ],
+  "tricycles": [
+    {
+      "id": "101",
+      "plateNumber": "LP-1234",
+      "operatorName": "Juan dela Cruz",
+      "phoneNumber": "09171234567"
+    },
+    {
+      "id": "102",
+      "plateNumber": "LP-5678",
+      "operatorName": "Mario Reyes",
+      "phoneNumber": "09179876543"
+    },
+    {
+      "id": "103",
+      "plateNumber": "LP-9012",
+      "operatorName": "Ben Santos",
+      "phoneNumber": "09175551234"
+    }
+  ]
+}
