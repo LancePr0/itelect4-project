@@ -1,13 +1,19 @@
 // src/pages/ComplaintsPage.tsx
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router";
 import type { Complaint } from "../api/client";
 import { fetchComplaints, createComplaint } from "../api/client";
+import { complaintSchema } from "../schemas/complaintSchema";
+import type { ComplaintFormValues } from "../schemas/complaintSchema";
 import ComplaintCard from "../components/ComplaintCard";
 import usePrevious from "../hooks/usePrevious";
 import useToggle from "../hooks/useToggle";
 import useUiStore from "../store/uiStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function ComplaintsPage() {
   const queryClient = useQueryClient();
@@ -24,10 +30,22 @@ function ComplaintsPage() {
   const previousSearch = usePrevious(searchTerm);
   const [showDetails, toggleDetails] = useToggle(false);
 
-  // The new-complaint form. Local, because only this one form reads it.
-  const [complainantName, setComplainantName] = useState<string>("");
-  const [violationType, setViolationType] = useState<string>("");
-  const [tricycleBody, setTricycleBody] = useState<string>("");
+  // The new-complaint form -- useForm holds the values, runs the schema,
+  // and stores the errors. No useState per field any more.
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ComplaintFormValues>({
+    resolver: zodResolver(complaintSchema),
+    mode: "onBlur",
+    defaultValues: {
+      complainantName: "",
+      violationType: "",
+      tricycleBodyNumber: "",
+    },
+  });
 
   // 2. WRITE -- mutationFn does the POST, onSuccess cleans up after it
   const addComplaint = useMutation({
@@ -35,18 +53,17 @@ function ComplaintsPage() {
     onSuccess: () => {
       // "the complaints list is out of date now -- go and refetch it"
       queryClient.invalidateQueries({ queryKey: ["complaints"] });
-      setComplainantName("");
-      setViolationType("");
-      setTricycleBody("");
+      reset();
     },
   });
 
-  const handleFile = (): void => {
+  // handleSubmit only calls this after the schema passes.
+  const onSubmit = (values: ComplaintFormValues): void => {
     addComplaint.mutate({
       complaint_number: `CMP-${Date.now()}`,
-      complainant_name: complainantName,
-      tricycle_body_number: tricycleBody,
-      violation_type: violationType,
+      complainant_name: values.complainantName,
+      tricycle_body_number: values.tricycleBodyNumber,
+      violation_type: values.violationType,
       status: "Pending",
       created_at: new Date().toISOString(),
     });
@@ -74,9 +91,6 @@ function ComplaintsPage() {
       c.complaint_number.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const canFile =
-    complainantName !== "" && violationType !== "" && tricycleBody !== "";
-
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -92,46 +106,79 @@ function ComplaintsPage() {
       </div>
 
       {/* File a new complaint -- POST /complaints, then invalidate the list */}
-      <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <input
-          value={complainantName}
-          onChange={(e) => setComplainantName(e.target.value)}
-          placeholder="Complainant name"
-          className="rounded border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        />
-        <input
-          value={violationType}
-          onChange={(e) => setViolationType(e.target.value)}
-          placeholder="Violation"
-          className="rounded border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        />
-        <div className="flex gap-2">
-          <input
-            value={tricycleBody}
-            onChange={(e) => setTricycleBody(e.target.value)}
-            placeholder="Tricycle body #"
-            className="w-full rounded border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mb-6 grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700 sm:grid-cols-3"
+      >
+        <div className="grid gap-1.5">
+          <Label htmlFor="complainantName" className="text-foreground">
+            Complainant name
+          </Label>
+          <Input
+            id="complainantName"
+            {...register("complainantName")}
+            aria-invalid={errors.complainantName ? true : undefined}
+            placeholder="Maria Santos"
           />
-          <button
-            onClick={handleFile}
-            disabled={!canFile || addComplaint.isPending}
-            className="rounded bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {addComplaint.isPending ? "Filing..." : "File"}
-          </button>
+          {errors.complainantName && (
+            <p className="text-sm text-red-600">
+              {errors.complainantName.message}
+            </p>
+          )}
         </div>
-      </div>
+
+        <div className="grid gap-1.5">
+          <Label htmlFor="violationType" className="text-foreground">
+            Violation
+          </Label>
+          <Input
+            id="violationType"
+            {...register("violationType")}
+            aria-invalid={errors.violationType ? true : undefined}
+            placeholder="Overcharging"
+          />
+          {errors.violationType && (
+            <p className="text-sm text-red-600">
+              {errors.violationType.message}
+            </p>
+          )}
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label htmlFor="tricycleBodyNumber" className="text-foreground">
+            Tricycle body #
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id="tricycleBodyNumber"
+              {...register("tricycleBodyNumber")}
+              aria-invalid={errors.tricycleBodyNumber ? true : undefined}
+              placeholder="123"
+            />
+            {/* Never disabled on "invalid": clicking it is what shows the
+                error messages. Only a save in flight disables it. */}
+            <Button type="submit" disabled={addComplaint.isPending}>
+              {addComplaint.isPending ? "Filing..." : "File"}
+            </Button>
+          </div>
+          {errors.tricycleBodyNumber && (
+            <p className="text-sm text-red-600">
+              {errors.tricycleBodyNumber.message}
+            </p>
+          )}
+        </div>
+      </form>
+
       {addComplaint.isError && (
         <p className="mb-4 text-sm text-red-700">
           {addComplaint.error.message}
         </p>
       )}
 
-      <input
+      <Input
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search complaints..."
-        className="mt-4 w-full rounded border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
       />
 
       {previousSearch !== undefined && previousSearch !== searchTerm && (
