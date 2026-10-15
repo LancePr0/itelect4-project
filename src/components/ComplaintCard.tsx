@@ -1,13 +1,18 @@
 // src/components/ComplaintCard.tsx
-import type { Complaint } from "../api/client";
+import type { ApiComplaint } from "../types/index";
 import StatusBadge from "./StatusBadge";
 
 interface ComplaintCardProps {
-    complaint: Complaint;
-    variant?: "default" | "compact"; 
+    complaint: ApiComplaint;
+    // The card never fetches a tricycle itself -- tricycleId is a Mongo
+    // id, not a plate number, and the parent already has the tricycle
+    // list loaded for the form's dropdown. Passing the plate in avoids
+    // every card re-fetching the same three rows.
+    tricyclePlate?: string;
+    variant?: "default" | "compact";
 }
 
-function ComplaintCard({ complaint, variant = "default" }: ComplaintCardProps) {
+function ComplaintCard({ complaint, tricyclePlate, variant = "default" }: ComplaintCardProps) {
     const isCompact = variant === "compact";
 
     return (
@@ -22,7 +27,7 @@ function ComplaintCard({ complaint, variant = "default" }: ComplaintCardProps) {
                         isCompact ? "text-sm" : "text-lg"
                     }`}
                 >
-                    {complaint.complaint_number}
+                    {complaint.complainantName}
                 </h3>
                 <StatusBadge statusType={complaint.status} variant="compact" />
             </div>
@@ -30,12 +35,12 @@ function ComplaintCard({ complaint, variant = "default" }: ComplaintCardProps) {
             {/* Compact view hides extra info */}
             {!isCompact && (
                 <p className="mt-2 text-gray-600 dark:text-gray-300">
-                    Complainant: {complaint.complainant_name}
+                    {complaint.issueDescription}
                 </p>
             )}
 
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Violation: {complaint.violation_type} — Body #{complaint.tricycle_body_number}
+                Tricycle: {tricyclePlate ?? complaint.tricycleId}
             </p>
         </div>
     );

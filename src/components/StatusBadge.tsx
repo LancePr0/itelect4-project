@@ -1,8 +1,6 @@
 // src/components/StatusBadge.tsx
 import React from "react";
-import type { Complaint } from "../api/client";
-
-type ComplaintStatus = Complaint["status"];
+import { ComplaintStatus } from "../types/index";
 
 interface StatusBadgeProps {
     statusType: ComplaintStatus;
@@ -11,9 +9,9 @@ interface StatusBadgeProps {
 }
 
 const STATUS_STYLES: Record<ComplaintStatus, string> = {
-    Pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
-    "Under Review": "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-    Resolved: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+    [ComplaintStatus.PENDING]: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+    [ComplaintStatus.RESOLVED]: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
+    [ComplaintStatus.REJECTED]: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ statusType, variant = "default", children }) => {

@@ -3,8 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router";
-import type { Complaint } from "../api/client";
-import { fetchComplaints, createComplaint } from "../api/client";
+import type { ApiComplaint, ApiTricycle } from "../types/index";
+import {
+  fetchComplaints,
+  fetchTricycles,
+  createComplaint,
+} from "../api/client";
 import { complaintSchema } from "../schemas/complaintSchema";
 import type { ComplaintFormValues } from "../schemas/complaintSchema";
 import ComplaintCard from "../components/ComplaintCard";
@@ -18,10 +22,26 @@ import { Label } from "@/components/ui/label";
 function ComplaintsPage() {
   const queryClient = useQueryClient();
 
-  // 1. READ
-  const { data, isPending, isError, error } = useQuery<Complaint[]>({
+  // 1. READ -- two lists: the complaints themselves, and the tricycles
+  // the dropdown (and every card's plate number) reads from.
+  const {
+    data: complaints,
+    isPending: complaintsPending,
+    isError: complaintsError,
+    error: complaintsErrorObj,
+  } = useQuery<ApiComplaint[]>({
     queryKey: ["complaints"],
     queryFn: fetchComplaints,
+  });
+
+  const {
+    data: tricycles,
+    isPending: tricyclesPending,
+    isError: tricyclesError,
+    error: tricyclesErrorObj,
+  } = useQuery<ApiTricycle[]>({
+    queryKey: ["tricycles"],
+    queryFn: fetchTricycles,
   });
 
   // The search box reads and writes the store, not local state
@@ -41,9 +61,9 @@ function ComplaintsPage() {
     resolver: zodResolver(complaintSchema),
     mode: "onBlur",
     defaultValues: {
+      tricycleId: "",
       complainantName: "",
-      violationType: "",
-      tricycleBodyNumber: "",
+      issueDescription: "",
     },
   });
 
@@ -57,19 +77,14 @@ function ComplaintsPage() {
     },
   });
 
-  // handleSubmit only calls this after the schema passes.
+  // handleSubmit only calls this after the schema passes. filedBy,
+  // status and filedAt all come from the token and the schema defaults
+  // -- sending any of them would be ignored at best.
   const onSubmit = (values: ComplaintFormValues): void => {
-    addComplaint.mutate({
-      complaint_number: `CMP-${Date.now()}`,
-      complainant_name: values.complainantName,
-      tricycle_body_number: values.tricycleBodyNumber,
-      violation_type: values.violationType,
-      status: "Pending",
-      created_at: new Date().toISOString(),
-    });
+    addComplaint.mutate(values);
   };
 
-  if (isPending) {
+  if (complaintsPending || tricyclesPending) {
     return (
       <div className="animate-pulse p-6 text-gray-500 dark:text-gray-400">
         Loading complaints...
@@ -77,18 +92,21 @@ function ComplaintsPage() {
     );
   }
 
-  if (isError) {
+  if (complaintsError || tricyclesError) {
     return (
       <div className="rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-950 dark:text-red-300">
-        {error.message} -- is json-server running on port 3001?
+        {(complaintsErrorObj ?? tricyclesErrorObj)?.message}
       </div>
     );
   }
 
-  const filteredComplaints = data.filter(
+  // A lookup so every card shows a plate number, not a Mongo id.
+  const plateById = new Map(tricycles.map((t) => [t.id, t.plateNumber]));
+
+  const filteredComplaints = complaints.filter(
     (c) =>
-      c.violation_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.complaint_number.toLowerCase().includes(searchTerm.toLowerCase())
+      c.issueDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.complainantName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -105,11 +123,36 @@ function ComplaintsPage() {
         </button>
       </div>
 
-      {/* File a new complaint -- POST /complaints, then invalidate the list */}
+      {/* File a new complaint -- POST /api/complaints, then invalidate
+          the list */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mb-6 grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700 sm:grid-cols-3"
+        className="mb-6 grid grid-cols-1 gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700 sm:grid-cols-4"
       >
+        <div className="grid gap-1.5">
+          <Label htmlFor="tricycleId" className="text-foreground">
+            Tricycle
+          </Label>
+          <select
+            id="tricycleId"
+            {...register("tricycleId")}
+            aria-invalid={errors.tricycleId ? true : undefined}
+            className="h-9 rounded-md border border-gray-300 bg-transparent px-3 text-sm dark:border-gray-600"
+          >
+            <option value="">Select a tricycle</option>
+            {tricycles.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.plateNumber} -- {t.operatorName}
+              </option>
+            ))}
+          </select>
+          {errors.tricycleId && (
+            <p className="text-sm text-red-600">
+              {errors.tricycleId.message}
+            </p>
+          )}
+        </div>
+
         <div className="grid gap-1.5">
           <Label htmlFor="complainantName" className="text-foreground">
             Complainant name
@@ -128,32 +171,15 @@ function ComplaintsPage() {
         </div>
 
         <div className="grid gap-1.5">
-          <Label htmlFor="violationType" className="text-foreground">
-            Violation
-          </Label>
-          <Input
-            id="violationType"
-            {...register("violationType")}
-            aria-invalid={errors.violationType ? true : undefined}
-            placeholder="Overcharging"
-          />
-          {errors.violationType && (
-            <p className="text-sm text-red-600">
-              {errors.violationType.message}
-            </p>
-          )}
-        </div>
-
-        <div className="grid gap-1.5">
-          <Label htmlFor="tricycleBodyNumber" className="text-foreground">
-            Tricycle body #
+          <Label htmlFor="issueDescription" className="text-foreground">
+            Issue
           </Label>
           <div className="flex gap-2">
             <Input
-              id="tricycleBodyNumber"
-              {...register("tricycleBodyNumber")}
-              aria-invalid={errors.tricycleBodyNumber ? true : undefined}
-              placeholder="123"
+              id="issueDescription"
+              {...register("issueDescription")}
+              aria-invalid={errors.issueDescription ? true : undefined}
+              placeholder="Overcharging"
             />
             {/* Never disabled on "invalid": clicking it is what shows the
                 error messages. Only a save in flight disables it. */}
@@ -161,9 +187,9 @@ function ComplaintsPage() {
               {addComplaint.isPending ? "Filing..." : "File"}
             </Button>
           </div>
-          {errors.tricycleBodyNumber && (
+          {errors.issueDescription && (
             <p className="text-sm text-red-600">
-              {errors.tricycleBodyNumber.message}
+              {errors.issueDescription.message}
             </p>
           )}
         </div>
@@ -197,6 +223,7 @@ function ComplaintsPage() {
             <Link key={item.id} to={`/complaints/${item.id}`}>
               <ComplaintCard
                 complaint={item}
+                tricyclePlate={plateById.get(item.tricycleId)}
                 variant={showDetails ? "default" : "compact"}
               />
             </Link>
