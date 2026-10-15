@@ -29,7 +29,12 @@ function Layout() {
           <NavLink to="/tricycles" className={linkClass}>Tricycles</NavLink>
 
           {userName === null ? (
-            <NavLink to="/login" className={linkClass}>Login</NavLink>
+            <>
+              <NavLink to="/login" className={linkClass}>Login</NavLink>
+              <NavLink to="/register" className={linkClass}>
+                Register
+              </NavLink>
+            </>
           ) : (
             <button
               onClick={logout}

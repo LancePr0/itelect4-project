@@ -1,8 +1,9 @@
 // src/pages/TricyclesPage.tsx
-// Behind ProtectedRoute -- operator phone numbers only show to logged-in officers.
+// Public, like the backend's GET /api/tricycles -- the list a complaint's
+// dropdown needs has to be visible before anybody has logged in.
 import { useQuery } from "@tanstack/react-query";
 import type { ApiTricycle } from "../types/index";
-import { fetchTricycles } from "../api/client";
+import { fetchTricycles, API_URL } from "../api/client";
 
 function TricyclesPage() {
   const { data, isPending, isError, error } = useQuery<ApiTricycle[]>({
@@ -21,7 +22,7 @@ function TricyclesPage() {
   if (isError) {
     return (
       <div className="rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-950 dark:text-red-300">
-        {error.message} -- is json-server running on port 3001?
+        {error.message} -- tried {API_URL}/api/tricycles
       </div>
     );
   }

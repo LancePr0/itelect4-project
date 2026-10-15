@@ -1,8 +1,8 @@
 // src/pages/ComplaintDetailPage.tsx
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router";
-import type { Complaint } from "../api/client";
-import { fetchComplaintById } from "../api/client";
+import type { ApiComplaint } from "../types/index";
+import { fetchComplaintById, fetchTricycleById } from "../api/client";
 import ComplaintCard from "../components/ComplaintCard";
 
 function ComplaintDetailPage() {
@@ -11,10 +11,18 @@ function ComplaintDetailPage() {
 
   // The id from the URL goes INTO the key, so each complaint gets its
   // own cache entry instead of every one sharing a single box.
-  const { data, isPending, isError, error } = useQuery<Complaint>({
+  const { data, isPending, isError, error } = useQuery<ApiComplaint>({
     queryKey: ["complaints", id],
     queryFn: () => fetchComplaintById(id!),
     enabled: id !== undefined,
+  });
+
+  // A second, dependent query: only runs once the complaint itself has
+  // come back and its tricycleId is known.
+  const { data: tricycle } = useQuery({
+    queryKey: ["tricycles", data?.tricycleId],
+    queryFn: () => fetchTricycleById(data!.tricycleId),
+    enabled: data !== undefined,
   });
 
   if (isPending) {
@@ -36,11 +44,11 @@ function ComplaintDetailPage() {
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-        {data.complaint_number}
+        {data.complainantName}
       </h2>
 
       <div className="max-w-sm">
-        <ComplaintCard complaint={data} />
+        <ComplaintCard complaint={data} tricyclePlate={tricycle?.plateNumber} />
       </div>
 
       <button

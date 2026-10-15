@@ -3,18 +3,24 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
-  token: string | null;
+  token:    string | null;
   userName: string | null;
-  login: (name: string) => void;
-  logout: () => void;
+  // Two values in, nothing invented. The login and register pages get
+  // them from the API and hand them here.
+  setSession: (token: string, userName: string) => void;
+  logout:     () => void;
 }
 
+// This file deliberately does not import ../api/client. client.ts reads
+// the token out of this store on every request, so a store that called
+// client.ts back would be an import loop. Keeping the fetching in the
+// pages and the state here means the arrow only points one way.
 const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       token: null,
       userName: null,
-      login: (name) => set({ token: `demo-token-${name}`, userName: name }),
+      setSession: (token, userName) => set({ token, userName }),
       logout: () => set({ token: null, userName: null }),
     }),
     {
@@ -29,3 +35,9 @@ const useAuthStore = create<AuthState>()(
 );
 
 export default useAuthStore;
+
+// The token is good for two hours -- that is the expiresIn in
+// itelect4-backend's login route. Persist keeps it across a reload, so
+// the app can come back holding one the API has already stopped
+// accepting: the next request answers 401, and Log out then log in
+// again is the fix.

@@ -39,6 +39,7 @@ const tricycleRecord: Tricycle = {
 
 const activeComplaint: Complaint = {
     id: 995,
+    filedBy: 1,
     tricycleId: 101,
     complainantName: "Maria Santos",
     issueDescription: "Overcharging fare beyond standard city matrices.",
