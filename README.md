@@ -2,6 +2,12 @@
 
 A simple tricycle complaint tracker for our ITELECT4 graded task. Built with React, TypeScript, and Vite, styled with Tailwind CSS v4. Has a responsive card grid, a dark mode toggle, and loading/error states for the complaint list.
 
+## Live
+
+- Frontend (this repo): https://itelect4-project-fawn.vercel.app
+- Backend: https://itelect4-backend-sigma.vercel.app
+- Backend repo: https://github.com/LancePr0/itelect4-backend
+
 ## Screenshots
 
 | Default view | Dark mode | Mobile width |
