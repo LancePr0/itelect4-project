@@ -80,6 +80,15 @@ export interface AuthReply {
   user:  ApiUser;
 }
 
+// What POST /api/ai sends back. Derived from itelect4-backend's
+// src/schemas/review.ts -- nothing checks that the two agree, you do.
+export interface AiReview {
+  summary:      string;
+  strengths:    string[];
+  improvements: string[];
+  readiness:    "ready" | "needs-more-detail" | "too-vague";
+}
+
 export type ID = number | string;
 export type StringOrNumber = string | number;
 

@@ -8,6 +8,7 @@ import ComplaintDetailPage from "./pages/ComplaintDetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import TricyclesPage from "./pages/TricyclesPage";
+import ReviewPage from "./pages/ReviewPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="complaints" element={<ComplaintsPage />} />
           <Route path="complaints/:id" element={<ComplaintDetailPage />} />
+          {/* Behind the same guard -- the API refuses it without a
+              token anyway, so the page should not offer it. */}
+          <Route path="review" element={<ReviewPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
