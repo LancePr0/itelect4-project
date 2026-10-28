@@ -7,6 +7,9 @@ const ref = useRef<T | undefined>(undefined);
 useEffect(() => {
 ref.current = value;
 }, [value]);
+// The classic usePrevious pattern: read-only, and always one render
+// behind, since the effect above only runs after this render commits.
+// eslint-disable-next-line react-hooks/refs
 return ref.current;
 }
 export default usePrevious;
