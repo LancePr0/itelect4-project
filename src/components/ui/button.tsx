@@ -55,4 +55,8 @@ function Button({
   )
 }
 
+// buttonVariants is exported alongside Button so other components can
+// reuse the same class list (e.g. a Link styled like a button). That
+// is what trips react-refresh's "only export components" rule here.
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants }
